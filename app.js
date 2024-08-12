@@ -5,10 +5,10 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-app.use(express.static(__dirname + '/uploads')) //know this later
-app.set('view engine', 'ejs')                   //know this later
+app.use(express.static(__dirname + '/uploads'))
+app.set('view engine', 'ejs') 
 
-// app.use(express.urlencoded({ extended: false })) //know this later
+// app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
 // const upload = multer({dest:"uploads/"})      // not use now
@@ -54,6 +54,32 @@ app.post('/upload', (req, res) => {
         }
     })
 });
+
+
+{/* <form action="/profile" method="post" enctype="multipart/form-data">
+  <input type="file" name="avatar" />
+</form> */}
+
+app.post('/profile', upload.single('avatar'), function (req, res, next) {
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+})
+  
+app.post('/photos/upload', upload.array('photos', 12), function (req, res, next) {
+    // req.files is array of `photos` files
+    // req.body will contain the text fields, if there were any
+})
+  
+const cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
+app.post('/cool-profile', cpUpload, function (req, res, next) {
+    // req.files is an object (String -> Array) where fieldname is the key, and the value is array of files
+    //
+    // e.g.
+    //  req.files['avatar'][0] -> File
+    //  req.files['gallery'] -> Array
+    //
+    // req.body will contain the text fields, if there were any
+})
 
 // Start server
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
